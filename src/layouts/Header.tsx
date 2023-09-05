@@ -5,6 +5,7 @@ import {
   Icon,
   Text,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react'
 import React, { useState } from 'react'
 import {
@@ -18,15 +19,25 @@ import Analyzer from '../utils/checkFlow'
 
 const Header: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-	const [isData, setIsData] = useState<boolean>(true)
+  const [isData, setIsData] = useState<boolean>(true)
+
+  const alert = useToast({position: 'top'})
   const refFlow = useReactFlow()
   const onSubmit = () => {
-    console.log(refFlow.toObject())
-    // TODO upload file and analysis
-		const analyzer = new Analyzer(refFlow.toObject())
-		analyzer.checkHealth()
+    const analyzer = new Analyzer(refFlow.toObject())
 
-    onOpen()
+    if (analyzer.checkFlow()) {
+			setIsData(analyzer.getInputData())
+      onOpen()
+    } else {
+      alert({
+        title: '模型错误',
+        description: "一个模型只有一个输入和输出，并连接正常!",
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    }
   }
 
   return (
