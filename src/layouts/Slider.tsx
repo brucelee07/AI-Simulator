@@ -1,5 +1,5 @@
 import React, { DragEvent } from 'react'
-import { Flex } from '@chakra-ui/react'
+import { Flex, Text, VStack } from '@chakra-ui/react'
 import {
   MdFolderOpen,
   MdOutlineReceiptLong,
@@ -29,39 +29,47 @@ const Slider: React.FC<Props> = ({ onDrop }) => {
       color='textColor'
       h='100vh'
       w={48}
+      justifyContent='space-between'
     >
-      <NodeInputs
-        title='数据输入'
-        color='red'
-        icon={MdFolderOpen}
-        subtitles={['数据输入', '图像输入', '文本输入']}
-        onDrop={onDrop}
-      />
+      <VStack>
+        <NodeInputs
+          title='数据输入'
+          color='red'
+          icon={MdFolderOpen}
+          subtitles={['数据输入', '图像输入', '文本输入']}
+          onDrop={onDrop}
+        />
 
-      <NodeInputs
-        title='基础模型'
-        color='green'
-        icon={MdOutlineReceiptLong}
-        subtitles={[
-          '线性回归',
-          '分类器',
-          'KNN',
-          'K-Means',
-          '神经元',
-          '决策树',
-          '随机森林',
-          '朴素贝叶斯',
-          'SVM',
-        ]}
-        onDrop={onDrop}
-      />
-      <NodeInputs
-        title='预测结果'
-        color='blue'
-        icon={MdOutlineOutput}
-        subtitles={['预测数据', '预测类别']}
-        onDrop={onDrop}
-      />
+        <NodeInputs
+          title='基础模型'
+          color='green'
+          icon={MdOutlineReceiptLong}
+          subtitles={[
+            '线性回归',
+            '分类器',
+            'KNN',
+            'K-Means',
+            '神经元',
+            '决策树',
+            '随机森林',
+            '朴素贝叶斯',
+            'SVM',
+          ]}
+          onDrop={onDrop}
+        />
+        <NodeInputs
+          title='预测结果'
+          color='blue'
+          icon={MdOutlineOutput}
+          subtitles={['预测数据', '预测类别']}
+          onDrop={onDrop}
+        />
+      </VStack>
+      <VStack p={2} h='100' w='100%'>
+        <Text bg='rootBg' p={2} fontSize='xs' borderRadius='md'>
+          联系@wx: labnetworks
+        </Text>
+      </VStack>
     </Flex>
   )
 }

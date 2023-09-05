@@ -1,14 +1,33 @@
-import { Flex, Heading, Icon } from '@chakra-ui/react'
-import React from 'react'
-import { MdSaveAlt, MdOutlineOpenInBrowser } from 'react-icons/md'
+import {
+  Center,
+  Flex,
+  Heading,
+  Icon,
+  Text,
+  useDisclosure,
+} from '@chakra-ui/react'
+import React, { useState } from 'react'
+import {
+  MdSaveAlt,
+  MdOutlineOpenInBrowser,
+  MdOutlineSave,
+} from 'react-icons/md'
 import { useReactFlow } from 'reactflow'
+import Analysis from '../components/Analysis'
+import Analyzer from '../utils/checkFlow'
 
 const Header: React.FC = () => {
-	const refFlow = useReactFlow()
-	const onSubmit = () => {
-		console.log(JSON.stringify(refFlow.toObject()))
-		// TODO upload file and analysis
-	}
+  const { isOpen, onOpen, onClose } = useDisclosure()
+	const [isData, setIsData] = useState<boolean>(true)
+  const refFlow = useReactFlow()
+  const onSubmit = () => {
+    console.log(refFlow.toObject())
+    // TODO upload file and analysis
+		const analyzer = new Analyzer(refFlow.toObject())
+		analyzer.checkHealth()
+
+    onOpen()
+  }
 
   return (
     <Flex
@@ -27,9 +46,20 @@ const Header: React.FC = () => {
         </Heading>
       </Flex>
       <Flex h='100%' align='center' mr={4}>
-        <Icon onClick={onSubmit} as={MdOutlineOpenInBrowser} boxSize={7} />
-        <Icon as={MdSaveAlt} boxSize={7} ml={3} />
+        <Center as='button' onClick={onSubmit}>
+          <Icon as={MdOutlineOpenInBrowser} boxSize={7} />
+          <Text>提交模型</Text>
+        </Center>
+        <Center as='button' onClick={onSubmit}>
+          <Icon as={MdSaveAlt} boxSize={7} ml={3} />
+          <Text>载入模型</Text>
+        </Center>
+        <Center as='button' onClick={onSubmit}>
+          <Icon as={MdOutlineSave} boxSize={7} ml={3} />
+          <Text>保存模型</Text>
+        </Center>
       </Flex>
+      <Analysis isOpen={isOpen} onClose={onClose} isData={isData} />
     </Flex>
   )
 }
