@@ -47,8 +47,6 @@ const Slider: React.FC<Props> = ({ onDrop }) => {
           subtitles={[
             '线性回归',
             '分类器',
-            'KNN',
-            'K-Means',
             '神经元',
             '决策树',
             '随机森林',
