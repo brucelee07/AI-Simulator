@@ -2,8 +2,8 @@ from fastapi import Depends, FastAPI, HTTPException, UploadFile, File, Form, sta
 from fastapi.encoders import jsonable_encoder
 from pydantic_core import ValidationError
 
-from schemas import Node, PredictData, PredictText
-from utils import predict_from_text, predict_result, stream_train_model
+from schemas import Node, PredictData, PredictText, UploadImageSchema
+from utils import stream_train_image, stream_train_model
 
 app = FastAPI()
 
@@ -31,20 +31,30 @@ async def training(node: Node = Depends(checker), file: UploadFile = File(...)):
     return {'model': middle_path}
 
 
+@app.post('/training_image')
+async def training_image(input: UploadImageSchema):
+    middle_path = stream_train_image(input.node, input.title)
+    if middle_path is None:
+        return {'error': 'model and data cannot be trained!'}
+    return {'model': middle_path}
+
+
 @app.post('/predict_data')
 async def predict_data(input: PredictData):
+    return {'input': input}
 
-    result = predict_result(input.middle_path, input.data)
-
-    return {'result': result}
+    # result = predict_result(input.middle_path, input.data)
+    #
+    # return {'result': result}
 
 
 @app.post('/predict_text')
 async def predict_text(input: PredictText):
+    return {'input': input}
 
-    result = predict_from_text(input.middle_path, input.text)
-
-    return {'result': result}
+    # result = predict_from_text(input.middle_path, input.text)
+    #
+    # return {'result': result}
 
 
 @app.post('/predict_image')

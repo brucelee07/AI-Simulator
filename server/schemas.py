@@ -12,9 +12,15 @@ class Node(BaseModel):
     next: Union['Node', None] = None
 
 
+class UploadImageSchema(BaseModel):
+    node: Node
+    title: str
+
+
 class PredictData(BaseModel):
     middle_path: str
     data: list[float | str]
+
 
 class PredictText(BaseModel):
     middle_path: str
