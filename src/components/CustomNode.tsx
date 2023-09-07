@@ -1,7 +1,8 @@
 import { Center, Icon, Text, VStack } from '@chakra-ui/react'
 import { memo } from 'react'
 import { IconType } from 'react-icons'
-import { Handle, NodeProps, Position } from 'reactflow'
+import { NodeProps, Position } from 'reactflow'
+import Handle from './CustomHandle'
 
 export type NodeData = {
   title: string
@@ -34,20 +35,40 @@ const CustomNode = memo(({ data }: NodeProps<NodeData>) => {
   const showType = (nodeType: string | undefined) => {
     if (nodeType === 'input') {
       return (
-        <Handle style={handleStyle} type='source' position={Position.Bottom} />
+        <Handle
+          style={handleStyle}
+          maxConnections={1}
+          isConnectable={true}
+          type='source'
+          position={Position.Bottom}
+        />
       )
     } else if (nodeType === 'output') {
       return (
-        <Handle style={handleStyle} type='target' position={Position.Top} />
+        <Handle
+          style={handleStyle}
+          maxConnections={1}
+          isConnectable={true}
+          type='target'
+          position={Position.Top}
+        />
       )
     } else {
       return (
         <>
-          <Handle style={handleStyle} type='target' position={Position.Top} />
+          <Handle
+            style={handleStyle}
+            maxConnections={2}
+            isConnectable={true}
+            type='target'
+            position={Position.Top}
+          />
           <Handle
             style={handleStyle}
             type='source'
             position={Position.Bottom}
+            maxConnections={2}
+            isConnectable={true}
           />
         </>
       )
