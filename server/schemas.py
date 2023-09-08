@@ -19,7 +19,7 @@ class UploadImageSchema(BaseModel):
 
 class PredictData(BaseModel):
     middle_path: str
-    data: list[float | str]
+    data: list[Union[float, str, int]]
 
 
 class PredictText(BaseModel):
