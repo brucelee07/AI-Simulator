@@ -6,6 +6,8 @@
 - 版本0.5
   ![](./screen3.png 'front page')
 
+  ![show](./sample.gif)
+
 ### 前端采用 Reactjs + ReactFlow + Chakra-UI
 
 ### 后端采用 FastApi + Scikit-Learn 来训练模型
