@@ -5,23 +5,63 @@ import {
   HStack,
   VStack,
   Select,
+  useToast,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React, { useState } from 'react'
 import PredictImage from './PredictImage'
+import { Node } from '../utils/analizeFlow'
+import { uploadImage } from '../utils/apis'
 
-const SelectDataset: React.FC = () => {
+interface Props {
+  nodeLink: Node | undefined
+}
+
+const SelectDataset: React.FC<Props> = ({ nodeLink }) => {
   const [predict, setPredict] = useState<boolean>(false)
+  const alert = useToast({ position: 'top' })
+
+  const handleError = () => {
+    alert({
+      title: '服务器出错',
+      description: '连接服务器出错!',
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    })
+  }
 
   const formik = useFormik({
     initialValues: {
-      dataset: 'number',
+      title: 'number',
     },
-    onSubmit: (values) => {
-      console.log(values.dataset)
-      console.log('upload')
-      // TODO upload file to servr
-      setPredict(true)
+    onSubmit: async (values) => {
+      const data = { title: values.title, node: nodeLink }
+      const res = await uploadImage(data, handleError)
+      if (res !== undefined) {
+        if (res.status! === 200) {
+          if ('error' in res.data) {
+            alert({
+              title: '模型设计错误',
+              description: '模型和数据不匹配!',
+              status: 'error',
+              duration: 3000,
+              isClosable: true,
+            })
+          } else {
+            localStorage.setItem('model_path', res.data.model)
+            setPredict(true)
+          }
+        } else {
+          alert({
+            title: '连接服务器出错',
+            description: '连接服务器出错!',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+          })
+        }
+      }
     },
   })
 
@@ -40,7 +80,7 @@ const SelectDataset: React.FC = () => {
                 选择数据类型
               </FormLabel>
               <Select
-                value={formik.values.dataset}
+                value={formik.values.title}
                 name='dataset'
                 onChange={formik.handleChange}
               >

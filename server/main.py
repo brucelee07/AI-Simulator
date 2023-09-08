@@ -1,5 +1,6 @@
 import asyncio
 
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Depends, FastAPI, HTTPException, UploadFile, File, Form, status
 from fastapi.encoders import jsonable_encoder
 from pydantic_core import ValidationError
@@ -8,6 +9,14 @@ from schemas import Node, PredictData, PredictText, UploadImageSchema
 from utils import predict_from_image, predict_from_text, predict_result, stream_train_image, stream_train_model
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 async def checker(data: str = Form(...)):
@@ -21,10 +30,10 @@ async def checker(data: str = Form(...)):
 
 @app.post('/training')
 async def training(node: Node = Depends(checker), file: UploadFile = File(...)):
-    middle_path = stream_train_model(file, node)
-    if middle_path is None:
+    result = stream_train_model(file, node)
+    if result is None:
         return {'error': 'model and data cannot be trained!'}
-    return {'model': middle_path}
+    return {'model': result[0], 'inputs': result[1]}
 
 
 @app.post('/training_image')

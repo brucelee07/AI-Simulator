@@ -9,15 +9,17 @@ import {
 import React from 'react'
 import UploadFile from './UploadFile'
 import SelectDataset from './SelectDataset'
+import { Node } from '../utils/analizeFlow'
 
 interface Props {
   isOpen: boolean
   isData: boolean
   onClose: () => void
+  nodeLink: Node | undefined
 }
 
-const Analysis: React.FC<Props> = ({ isOpen, onClose, isData }) => {
-  console.log(isData)
+const Analysis: React.FC<Props> = ({ isOpen, onClose, isData, nodeLink }) => {
+  console.log(nodeLink)
   return (
     <Modal isOpen={isOpen} onClose={onClose} size='2xl'>
       <ModalOverlay />
@@ -27,7 +29,13 @@ const Analysis: React.FC<Props> = ({ isOpen, onClose, isData }) => {
             提交数据
           </Heading>
         </ModalHeader>
-        <ModalBody>{isData ? <UploadFile /> : <SelectDataset />}</ModalBody>
+        <ModalBody>
+          {isData ? (
+            <UploadFile nodeLink={nodeLink} />
+          ) : (
+            <SelectDataset nodeLink={nodeLink} />
+          )}
+        </ModalBody>
       </ModalContent>
     </Modal>
   )

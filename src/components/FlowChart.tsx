@@ -64,7 +64,7 @@ const initialNodes: Node<NodeData>[] = [
     data: {
       title: '预测结果',
       icon: MdOutlineOutput,
-      subline: '预测类别',
+      subline: '预测结果',
       type: 'output',
     },
   },

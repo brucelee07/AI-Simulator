@@ -59,7 +59,7 @@ const Slider: React.FC<Props> = ({ onDrop }) => {
           title='预测结果'
           color='blue'
           icon={MdOutlineOutput}
-          subtitles={['预测数据', '预测类别']}
+          subtitles={['预测结果']}
           onDrop={onDrop}
         />
       </VStack>

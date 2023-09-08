@@ -6,33 +6,83 @@ import {
   Input,
   VStack,
   Text,
+  useToast,
 } from '@chakra-ui/react'
-import { useFormik } from 'formik'
+import { setIn, useFormik } from 'formik'
 import React, { useState } from 'react'
 import Predict from './Predict'
+import { Node } from '../utils/analizeFlow'
+import { upload } from '../utils/apis'
 
-const UploadFile: React.FC = () => {
+interface Props {
+  nodeLink: Node | undefined
+}
+
+const UploadFile: React.FC<Props> = ({ nodeLink }) => {
   const [error, setError] = useState<boolean>(false)
   const [predict, setPredict] = useState<boolean>(false)
+  const [inputs, setInputs] = useState<string[]>([])
+  const [isText, setIsText] = useState<boolean>(false)
+
+  const alert = useToast({ position: 'top' })
+
+  const handleError = () => {
+    alert({
+      title: '服务器出错',
+      description: '连接服务器出错!',
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    })
+  }
 
   const formik = useFormik({
     initialValues: {
-      file: [],
+      files: [],
     },
-    onSubmit: (values) => {
-      if (values.file.length === 0) {
+    onSubmit: async (values) => {
+      if (values.files.length === 0) {
         setError(true)
         return
       }
       // eslint-disable-next-line
       // @ts-ignore
-      if (values.file[0].type !== 'text/csv') {
+      if (values.files[0].type !== 'text/csv') {
         setError(true)
         return
       }
-      console.log('upload')
-      // TODO upload file to servr
-      setPredict(true)
+      const data = new FormData()
+      data.append('file', values.files[0])
+      data.append('data', JSON.stringify(nodeLink))
+      const res = await upload(data, handleError)
+      if (res?.status === 200) {
+        if ('error' in res.data) {
+          alert({
+            title: '模型设计错误',
+            description: '模型和数据不匹配!',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+          })
+        } else {
+          localStorage.setItem('model_path', res.data.model)
+          setInputs(res.data.inputs)
+          if (nodeLink?.subtitle === '文本输入') {
+            setIsText(true)
+          } else {
+            setIsText(false)
+          }
+          setPredict(true)
+        }
+      } else {
+        alert({
+          title: '服务器出错',
+          description: '连接服务器出错!',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        })
+      }
     },
   })
 
@@ -52,11 +102,11 @@ const UploadFile: React.FC = () => {
               </FormLabel>
               <Input
                 type='file'
-                name='file'
+                name='files'
                 p={1}
                 onChange={(event) => {
                   setError(false)
-                  formik.setFieldValue('file', event.target.files)
+                  formik.setFieldValue('files', event.target.files)
                 }}
               />
             </HStack>
@@ -71,7 +121,7 @@ const UploadFile: React.FC = () => {
           </Button>
         </VStack>
       </form>
-      {predict && <Predict />}
+      {predict && <Predict inputs={inputs} isText={isText} />}
     </VStack>
   )
 }

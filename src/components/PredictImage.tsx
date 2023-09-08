@@ -6,32 +6,62 @@ import {
   Input,
   VStack,
   Text,
+  useToast,
 } from '@chakra-ui/react'
 import { useFormik } from 'formik'
 import React, { useState } from 'react'
+import { predictImage } from '../utils/apis'
 
 const PredictImage: React.FC = () => {
   const [result, setResult] = useState<boolean>(false)
   const [value, setValue] = useState<number>(0)
   const [error, setError] = useState<boolean>(false)
+
+  const alert = useToast({ position: 'top' })
+
+  const handleError = () => {
+    alert({
+      title: '服务器出错',
+      description: '连接服务器出错!',
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    })
+  }
   const formik = useFormik({
     initialValues: {
-      file: [],
+      files: [],
     },
-    onSubmit: (values) => {
-      if (values.file.length === 0) {
+    onSubmit: async (values) => {
+      if (values.files.length === 0) {
         setError(true)
         return
       }
       // eslint-disable-next-line
       // @ts-ignore
-      if (!values.file[0].type.startsWith('image/')) {
+      if (!values.files[0].type.startsWith('image/')) {
         setError(true)
         return
       }
-      console.log('upload')
-      // TODO upload file to servr
-      setResult(true)
+      const data = new FormData()
+      data.append('file', values.files[0])
+      const middle_path = localStorage.getItem('model_path')
+      if (middle_path) {
+        data.append('middle_path', middle_path)
+        const res = await predictImage(data, middle_path, handleError)
+        if (res?.status === 200) {
+          setValue(res.data.result)
+          setResult(true)
+        } else {
+          alert({
+            title: '模型计算失败',
+            description: '连接服务器出错!',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+          })
+        }
+      }
     },
   })
 
@@ -64,7 +94,7 @@ const PredictImage: React.FC = () => {
                 onChange={(event) => {
                   setError(false)
                   setResult(false)
-                  formik.setFieldValue('file', event.target.files)
+                  formik.setFieldValue('files', event.target.files)
                 }}
               />
             </HStack>
