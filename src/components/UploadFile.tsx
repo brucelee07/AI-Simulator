@@ -8,7 +8,7 @@ import {
   Text,
   useToast,
 } from '@chakra-ui/react'
-import { setIn, useFormik } from 'formik'
+import { useFormik } from 'formik'
 import React, { useState } from 'react'
 import Predict from './Predict'
 import { Node } from '../utils/analizeFlow'

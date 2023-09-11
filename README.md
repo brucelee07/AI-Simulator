@@ -11,3 +11,7 @@
 ### 前端采用 Reactjs + ReactFlow + Chakra-UI
 
 ### 后端采用 FastApi + Scikit-Learn 来训练模型
+
+### 测试用的服务器:
+
+> [152.136.50.204](http://152.136.50.204:7000/)
