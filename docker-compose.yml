@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  server:
+    container_name: ai
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "7070:7070"
+    command: [uvicorn, "main:app", "--host", "0.0.0.0", "--port", "7070"]
+
+  web:
+    container_name: ai_web
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./confs:/etc/nginx/templates:ro
+      - ./dist:/usr/share/nginx/html:ro
+    command: [nginx-debug, "-g", "daemon off;"]
+    depends_on:
+      - server
+
+
